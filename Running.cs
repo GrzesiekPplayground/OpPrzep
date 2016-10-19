@@ -25,39 +25,23 @@ namespace OporyPrzeplywu
         }
 
         private bool _isRunning;
-
-        public bool isRunning
-        {
-            get
-            {
-                return _isRunning;
-            }
-            set
-            {
-                _isRunning = value;
-            }
-        }
+        private bool _restart;
 
         public object Start ()
         {
-            isRunning = true;
+            _isRunning = true;
+            _restart = true;           
 
             InputData data = InputData.INSTANCE;
             OutputData outData = OutputData.INSTANCE;
 
-            while (isRunning == true)
+            while (_isRunning == true)
             {
+                if (_restart == true)
+                {
+                    StartAsk(data);
+                }
 
-                //sample data
-                data.q1 = 100000000000000000;
-                data.rho = 0.845;
-                data.mi = 2;
-                data.dW = 47400000;
-                data.h = 2600;
-                data.pK = 285;
-
-
-                // fill data
                 data.ConvertToSi();
                 data.CalculateVSr("q1");
                 data.CalculateRe();
@@ -80,7 +64,7 @@ namespace OporyPrzeplywu
             switch (next)
             {
                 case "exit":
-                    isRunning = false;
+                    _isRunning = false;
                     break;
                 case "input values":
                     instance.PrintInputValues();
@@ -91,14 +75,62 @@ namespace OporyPrzeplywu
                 case "result":
                     outInstance.PrintResult();
                     break;
+                case "restart":
+                    _restart = true;
+                    break;
                 default:
                     Console.WriteLine("Wrong command. Try again.");
                     break;
             }
         }
-
-        private void ShowInputValues()
+        private void StartAsk(InputData instance)
         {
+            var _running = true;
+
+            while(_running == true)
+            {
+                Console.WriteLine("Insert data: ");
+
+                instance.q1 = InsertValue("q [m^3/h]: ");
+                instance.rho = InsertValue("rho [g/cm^3]: ");
+                instance.mi = InsertValue("mi [cP]: ");
+                instance.dW = InsertValue("Dw [mm]: ");
+                instance.h = InsertValue("H [m]: ");
+
+                _running = false;
+                _restart = false;
+            }
+            
+            
+
+        }
+
+        private double InsertValue(string message)
+        {
+            var _repeat = true;
+            var _value = 0.0;
+
+            while (_repeat == true)
+            {
+                Console.Write(message);
+
+                var _input = Console.ReadLine();
+
+                try
+                {
+                    _value = Convert.ToDouble(_input);
+                    _repeat = false;
+                }
+                catch(FormatException) {
+                    Console.WriteLine("Unable to convert '{0}' to a Double.", _input);
+                }
+                catch (OverflowException)
+                {
+                    Console.WriteLine("'{0}' is outside the range of a Double.", _input);
+                }
+            }
+
+            return _value;
         }
     }
 }
