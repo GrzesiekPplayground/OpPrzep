@@ -12,12 +12,7 @@ namespace OporyPrzeplywu
         {
             Running thisRun = Running.INSTANCE;
 
-            
-
-            while (true == true)
-            {
-                
-            }
+            thisRun.Start();
         }
     }
 }

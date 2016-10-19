@@ -38,37 +38,67 @@ namespace OporyPrzeplywu
             }
         }
 
-        public void Start ()
+        public object Start ()
         {
-
+            isRunning = true;
 
             InputData data = InputData.INSTANCE;
-
-            //sample data
-            data.q1 = 100;
-            data.rho = 0.845;
-            data.mi = 2;
-            data.dW = 474;
-            data.h = 2600;
-            data.pK = 285;
-
-
-            // fill data
-            data.ConvertToSi();
-            data.CalculateVSr("q1");
-            data.CalculateRe();
-            data.CalculateLambda();
-
-            //return result
             OutputData outData = OutputData.INSTANCE;
-            outData.CalculatedHmeters(data.arrayForResult);
-            outData.gamma = data.rho * data.g;
-            Console.WriteLine(outData.dHmeters);
-            Console.WriteLine(outData.dH);
 
-            var x = outData.dH;
+            while (isRunning == true)
+            {
 
-            isRunning = false;
+                //sample data
+                data.q1 = 100000000000000000;
+                data.rho = 0.845;
+                data.mi = 2;
+                data.dW = 47400000;
+                data.h = 2600;
+                data.pK = 285;
+
+
+                // fill data
+                data.ConvertToSi();
+                data.CalculateVSr("q1");
+                data.CalculateRe();
+                data.CalculateLambda();
+
+                //return result
+                
+                outData.CalculatedHmeters(data.arrayForResult);
+                outData.gamma = data.rho * data.g;
+
+                AskUser(data, outData);
+            }
+
+            return outData;      
+        }
+        private void AskUser(InputData instance, OutputData outInstance)
+        {
+            Console.Write("What next? ");
+            string next = Console.ReadLine();
+            switch (next)
+            {
+                case "exit":
+                    isRunning = false;
+                    break;
+                case "input values":
+                    instance.PrintInputValues();
+                    break;
+                case "calculated values":
+                    instance.PrintCalculatedValues();
+                    break;
+                case "result":
+                    outInstance.PrintResult();
+                    break;
+                default:
+                    Console.WriteLine("Wrong command. Try again.");
+                    break;
+            }
+        }
+
+        private void ShowInputValues()
+        {
         }
     }
 }

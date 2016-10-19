@@ -39,6 +39,7 @@ namespace OporyPrzeplywu
         private double _pK;
         private double _re;
         private double _lambda;
+        private double _x;
 
         public double pi
         {
@@ -210,6 +211,14 @@ namespace OporyPrzeplywu
             }
         }
 
+        public double x
+        {
+            get
+            {
+                return _x;
+            }
+        }
+
         public double[] arrayForResult
         {
             get
@@ -219,6 +228,53 @@ namespace OporyPrzeplywu
             }
         }
 
+        private Dictionary<string, double> inputValues
+        {
+            get
+            {
+                var inputValues = new Dictionary<string, double>
+                {       
+                    {"q1", q1 },
+                    {"rho", rho },
+                    {"mi", mi },
+                    {"dW", dW },
+                    {"h", h }
+                };
+                return inputValues;
+            }
+        }
+
+        private Dictionary<string, double> calculatedValues
+        {
+            get
+            {
+                var calculatedValues = new Dictionary<string, double>
+                {
+                    {"gamma", gamma },
+                    {"lambda", lambda },
+                    {"vSr", vSr },
+                    {"ni", ni },
+                    {"x*", x }
+                };
+                return calculatedValues;
+            }
+        }
+
+        public void PrintInputValues() // abstract classes, inheritance (!)
+        {
+            foreach(KeyValuePair<string, double> entry in inputValues)
+            {
+                Console.WriteLine(entry);
+            }
+        }
+
+        public void PrintCalculatedValues()
+        {
+            foreach (KeyValuePair<string, double> entry in calculatedValues)
+            {
+                Console.WriteLine(entry);
+            }
+        }
         public void CalculateVSr (string q)
         {
             var _qv = new Double();
@@ -268,16 +324,15 @@ namespace OporyPrzeplywu
             }
             else
             {
-                // CO TO JEST D???
                 var _k = 0.00135;
 
                 var inLog = (3.13 * dW) / _k;
                 var number = 2 * Math.Log(inLog);
 
                 var _lambdaKw = Math.Pow(number, -2);
-                var x = re * (_k / dW) * Math.Pow(_lambdaKw, 0.5);
+                _x = re * (_k / dW) * Math.Pow(_lambdaKw, 0.5);
 
-                if (x<200)
+                if (_x<200)
                 {
                     _lambda = 0.0032 + (0.221 / Math.Pow(re, 0.237));
                 }
@@ -286,6 +341,7 @@ namespace OporyPrzeplywu
                     _lambda = _lambdaKw;
                 }
             }
+            
         }
 
         public void ConvertToSi () // define convert values in another class (interface?)

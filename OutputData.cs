@@ -55,6 +55,12 @@ namespace OporyPrzeplywu
             }
         }
 
+        public void PrintResult()
+        {
+            Console.WriteLine("dH = {0} m", dHmeters.ToString());
+            Console.WriteLine("dH = {0} Pa", dH.ToString());
+        }
+
         public void CalculatedHmeters(double[] inArray)
         {
             double lambda = inArray[0];
