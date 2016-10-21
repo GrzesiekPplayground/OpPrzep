@@ -43,9 +43,10 @@ namespace OporyPrzeplywu
                 }
 
                 data.ConvertToSi();
-                data.CalculateVSr("q1");
+                data.CalculateVSr();
                 data.CalculateRe();
                 data.CalculateLambda();
+                data.CalculatedP();
 
                 //return result
                 
@@ -94,11 +95,13 @@ namespace OporyPrzeplywu
             {
                 Console.WriteLine("Insert data: ");
 
-                instance.q1 = InsertValue("q [m^3/h]: ");
+                instance.q = InsertValue("q [kg/d]: ");
                 instance.rho = InsertValue("rho [g/cm^3]: ");
                 instance.mi = InsertValue("mi [cP]: ");
-                instance.dW = InsertValue("Dw [mm]: ");
+                instance.D = InsertValue("D - srednica zewn. rur ['']: ");
+                instance.delta = InsertValue("delta - gr. scianki [mm]: ");
                 instance.h = InsertValue("H [m]: ");
+                instance.k = InsertValue("współczynnik k [m]: ");
 
                 _running = false;
                 _restart = false;

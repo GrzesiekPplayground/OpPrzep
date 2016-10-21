@@ -11,7 +11,10 @@ namespace OporyPrzeplywu
     {
         private static InputData _instance = null;
 
-        private InputData () {}
+        private InputData ()
+        {
+            _isSI = false;
+        }
 
         public static InputData INSTANCE
         {
@@ -28,18 +31,20 @@ namespace OporyPrzeplywu
         private const double _pi = Math.PI;
         private const double _g = 9.80665;
         private double _vSr;
-        private double _dW;
-        private double _d;
-        private double _h;
-        private double _q1;
-        private double _q2;
-        private double _q3;
-        private double _rho;
-        private double _mi;
-        private double _pK;
-        private double _re;
+        private double _D; // '' > m
+        private double _delta; // mm > m
+        private double _h; // m 
+        private double _k;
+        private double _q; // kg/d > m3/s
+        private double _rho; // g/cm3 > kg/m3
+        private double _mi; // cP > Pa*S
+        private double _pK; //
+        private double _re; 
         private double _lambda;
+        private double _dP;
         private double _x;
+
+        private bool _isSI;
 
         public double pi
         {
@@ -61,22 +66,30 @@ namespace OporyPrzeplywu
         {
             get
             {
-                return _dW;
-            }
-            set
-            {
-                _dW = value;
+                return _D - (2 * _delta);
             }
         }
-        public double d
+
+        public double D
         {
             get
             {
-                return _d;
+                return _D;
             }
             set
             {
-                _d = value;
+                _D = value;
+            }
+        }
+        public double delta
+        {
+            get
+            {
+                return _delta;
+            }
+            set
+            {
+                _delta = value;
             }
         }
 
@@ -90,6 +103,18 @@ namespace OporyPrzeplywu
             set
             {
                 _h = value;
+            }
+        }
+
+        public double k
+        {
+            get
+            {
+                return _k;
+            }
+            set
+            {
+                _k = value;
             }
         }
 
@@ -127,42 +152,16 @@ namespace OporyPrzeplywu
             }
         }
 
-        public double q1
+        public double q
         {
             get
             {
-                return _q1;
+                return _q;
             }
 
             set
             {
-                _q1 = value;
-            }
-        }
-
-        public double q2
-        {
-            get
-            {
-                return _q2;
-            }
-
-            set
-            {
-                _q2 = value;
-            }
-        }
-
-        public double q3
-        {
-            get
-            {
-                return _q3;
-            }
-
-            set
-            {
-                _q3 = value;
+                _q = value;
             }
         }
 
@@ -184,6 +183,14 @@ namespace OporyPrzeplywu
             get
             {
                 return _vSr;
+            }
+        }
+
+        public double A
+        {
+            get
+            {
+                return pi * Math.Pow((dW / 2), 2);
             }
         }
 
@@ -219,11 +226,27 @@ namespace OporyPrzeplywu
             }
         }
 
+        public double dP
+        {
+            get
+            {
+                return _dP;
+            }
+        }
+
+        public bool isSI
+        {
+            get
+            {
+                return _isSI;
+            }
+        }
+
         public double[] arrayForResult
         {
             get
             {
-                double[] array = new double[5] { _lambda, _vSr, _h, _dW, _g};
+                double[] array = new double[5] { _lambda, _vSr, _h, dW, _g};
                 return array;
             }
         }
@@ -237,8 +260,10 @@ namespace OporyPrzeplywu
                     {"gamma", "_rho * _g" },
                     {"ni", "_mi / _rho" },
                     {"re", "(dW * vSr) / ni" },
+                    {"Vśr", "_qv / A;" },
                     {"lambda re < 2320", "64/re" },
                     {"lambda re >= 2320 && re < 100000", "(0.3164 / (Math.Pow(re, 0.25)))" },
+                    {"dP", "(_lambda * _rho * _vSr) / (2 * dW)" }
                 };
                 return _formulas;
             }
@@ -258,10 +283,13 @@ namespace OporyPrzeplywu
             {
                 var inputValues = new Dictionary<string, double>
                 {       
-                    {"q1", q1 },
+                    {"q", q },
                     {"rho", rho },
                     {"mi", mi },
+                    {"D", D },
+                    {"delta", delta },
                     {"dW", dW },
+                    {"A", A },
                     {"h", h }
                 };
                 return inputValues;
@@ -285,8 +313,10 @@ namespace OporyPrzeplywu
                     {"gamma", gamma },
                     {"lambda", lambda },
                     {"vSr", vSr },
+                    {"Re", re },
                     {"ni", ni },
-                    {"x*", x }
+                    {"x*", x },
+                    {"dP", dP }
                 };
                 return calculatedValues;
             }
@@ -301,6 +331,7 @@ namespace OporyPrzeplywu
         }
         public void Print(Dictionary<string, string> dic)
         {
+            Console.WriteLine("\n ====================================");
             foreach (KeyValuePair<string, string> entry in dic)
             {
                 Console.WriteLine(entry);
@@ -308,49 +339,18 @@ namespace OporyPrzeplywu
         }
         public void PrintValues(Dictionary<string, double> values) // abstract classes, inheritance (!)
         {
-            foreach(KeyValuePair<string, double> entry in values)
+            Console.WriteLine("\n ====================================");
+            foreach (KeyValuePair<string, double> entry in values)
             {
                 Console.WriteLine(entry);
             }
         }
 
-        public void PrintCalculatedValues()
+        public void CalculateVSr ()
         {
-            foreach (KeyValuePair<string, double> entry in _calculatedValues)
-            {
-                Console.WriteLine(entry);
-            }
-        }
-        public void CalculateVSr (string q)
-        {
-            var _qv = new Double();
-            var _a = pi  * Math.Pow((dW/2), 2);
-            var isOk = new Boolean();
+            var _qv = q;
 
-            while (!isOk)
-            {
-                var _q = new Double();
-                switch (q)
-                {
-                    case "q1":
-                        _q = _q1;
-                        isOk = true;
-                        break;
-                    case "q2":
-                        _q = _q2;
-                        isOk = true;
-                        break;
-                    case "q3":
-                        _q = _q3;
-                        isOk = true;
-                        break;
-                    default:
-                        Console.WriteLine("Błąd! Podaj q1, q2 lub q3");
-                        break;
-                }
-                _qv = _q / rho;
-            }
-            _vSr = _qv / _a;
+            _vSr = _qv / A;
         }
 
         public void CalculateRe()
@@ -370,7 +370,6 @@ namespace OporyPrzeplywu
             }
             else
             {
-                var _k = 0.00135;
 
                 var inLog = (3.13 * dW) / _k;
                 var number = 2 * Math.Log(inLog);
@@ -390,24 +389,35 @@ namespace OporyPrzeplywu
             
         }
 
+        public void CalculatedP()
+        {
+            _dP = (_lambda * _rho * _vSr) / (2 * dW);
+        }
+
         public void ConvertToSi () // define convert values in another class (interface?)
         {
             // '' to m
-            _dW /= 10000;
+            _D *= 0.0254;
+
+            // mm to m
+            _delta /= 1000;
 
             // cP to Pa*s
             _mi /= 1000;
 
-            // m3/h tp m3/s
-            _q1 /= 86400;
-            _q2 /= 86400;
-            _q3 /= 86400;
+            // g/cm3 to kg/cm3
+            _rho *= 1000;
+
+            // kg/d tp m3/s
+            _q /= 86400*_rho;
 
             // at to Pa
             _pK *= 98066.5;
 
-            // g/cm3 to kg/cm3
-            _rho *= 1000;
+
+            // update status
+            _isSI = true;
+
         }
 
     }
