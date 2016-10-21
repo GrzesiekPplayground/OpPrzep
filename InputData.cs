@@ -228,7 +228,31 @@ namespace OporyPrzeplywu
             }
         }
 
-        private Dictionary<string, double> inputValues
+        private Dictionary<string, string> _formulas
+        {
+            get
+            {
+                var _formulas = new Dictionary<string, string>
+                {
+                    {"gamma", "_rho * _g" },
+                    {"ni", "_mi / _rho" },
+                    {"re", "(dW * vSr) / ni" },
+                    {"lambda re < 2320", "64/re" },
+                    {"lambda re >= 2320 && re < 100000", "(0.3164 / (Math.Pow(re, 0.25)))" },
+                };
+                return _formulas;
+            }
+        }
+
+        public Dictionary<string, string> formulas
+        {
+            get
+            {
+                return _formulas;
+            }
+        }
+
+        private Dictionary<string, double> _inputValues
         {
             get
             {
@@ -244,7 +268,15 @@ namespace OporyPrzeplywu
             }
         }
 
-        private Dictionary<string, double> calculatedValues
+        public Dictionary<string, double> inputValues
+        {
+            get
+            {
+                return _inputValues;
+            }
+        }
+
+        private Dictionary<string, double> _calculatedValues
         {
             get
             {
@@ -260,9 +292,23 @@ namespace OporyPrzeplywu
             }
         }
 
-        public void PrintInputValues() // abstract classes, inheritance (!)
+        public Dictionary<string, double> calculatedValues
         {
-            foreach(KeyValuePair<string, double> entry in inputValues)
+            get
+            {
+                return _calculatedValues;
+            }
+        }
+        public void Print(Dictionary<string, string> dic)
+        {
+            foreach (KeyValuePair<string, string> entry in dic)
+            {
+                Console.WriteLine(entry);
+            }
+        }
+        public void PrintValues(Dictionary<string, double> values) // abstract classes, inheritance (!)
+        {
+            foreach(KeyValuePair<string, double> entry in values)
             {
                 Console.WriteLine(entry);
             }
@@ -270,7 +316,7 @@ namespace OporyPrzeplywu
 
         public void PrintCalculatedValues()
         {
-            foreach (KeyValuePair<string, double> entry in calculatedValues)
+            foreach (KeyValuePair<string, double> entry in _calculatedValues)
             {
                 Console.WriteLine(entry);
             }

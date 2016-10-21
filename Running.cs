@@ -63,14 +63,17 @@ namespace OporyPrzeplywu
             string next = Console.ReadLine();
             switch (next)
             {
+                case "calculated values":
+                    instance.PrintValues(instance.calculatedValues);
+                    break;
                 case "exit":
                     _isRunning = false;
                     break;
-                case "input values":
-                    instance.PrintInputValues();
+                case "formulas":
+                    instance.Print(instance.formulas);
                     break;
-                case "calculated values":
-                    instance.PrintCalculatedValues();
+                case "input values":
+                    instance.PrintValues(instance.inputValues);
                     break;
                 case "result":
                     outInstance.PrintResult();
