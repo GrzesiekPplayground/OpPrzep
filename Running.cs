@@ -25,40 +25,19 @@ namespace OporyPrzeplywu
         }
 
         private bool _isRunning;
-        private bool _restart;
-
-        public object Start ()
+        
+        public void Start ()
         {
             _isRunning = true;
-            _restart = true;           
-
-            InputData data = InputData.INSTANCE;
-            OutputData outData = OutputData.INSTANCE;
+            
 
             while (_isRunning == true)
             {
-                if (_restart == true)
-                {
-                    StartAsk(data);
-                }
-
-                data.ConvertToSi();
-                data.CalculateVSr();
-                data.CalculateRe();
-                data.CalculateLambda();
-                data.CalculatedP();
-
-                //return result
-                
-                outData.CalculatedHmeters(data.arrayForResult);
-                outData.gamma = data.rho * data.g;
-
-                AskUser(data, outData);
+                InputData data = InputData.INSTANCE;
+                AskUser(data);
             }
-
-            return outData;      
         }
-        private void AskUser(InputData instance, OutputData outInstance)
+        private void AskUser(InputData instance)
         {
             Console.Write("What next? ");
             string next = Console.ReadLine();
@@ -66,6 +45,12 @@ namespace OporyPrzeplywu
             {
                 case "calculated values":
                     instance.PrintValues(instance.calculatedValues);
+                    break;
+                case "calculate":
+                    instance.MakeCalculations(instance.isSI);
+                    break;
+                case "convert to SI":
+                    instance.ConvertToSi();
                     break;
                 case "exit":
                     _isRunning = false;
@@ -76,11 +61,11 @@ namespace OporyPrzeplywu
                 case "input values":
                     instance.PrintValues(instance.inputValues);
                     break;
-                case "result":
-                    outInstance.PrintResult();
+                case "insert data":
+                    StartAsk(instance);
                     break;
                 case "restart":
-                    _restart = true;
+                    instance.reset();
                     break;
                 default:
                     Console.WriteLine("Wrong command. Try again.");
@@ -104,7 +89,6 @@ namespace OporyPrzeplywu
                 instance.k = InsertValue("współczynnik k [m]: ");
 
                 _running = false;
-                _restart = false;
             }
             
             

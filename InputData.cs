@@ -394,6 +394,59 @@ namespace OporyPrzeplywu
             _dP = (_lambda * _rho * _vSr) / (2 * dW);
         }
 
+        private void Calculate()
+        {
+            CalculateVSr();
+            CalculateRe();
+            CalculateLambda();
+            CalculatedP();
+            Console.WriteLine("Calculations conpleted \n");
+        }
+
+        public void MakeCalculations(bool SI)
+        {
+            if (SI == true)
+            {
+                Calculate();
+            }
+            else
+            {
+                Start:
+                Console.WriteLine("Input values not in SI units! Do you want to continue? Write y or n");
+                string go = Console.ReadLine();
+
+                switch (go)
+                {
+                    case "y":
+                        Calculate();
+                        break;
+                    case "n":
+                        break;
+                    default:
+                        Console.WriteLine("Wrong! Type y or no.");
+                        goto Start;
+                }
+            }
+        }
+
+        public void reset()
+        {
+            _vSr = 0;
+            _D = 0; 
+            _delta = 0; 
+             _h = 0; 
+            _k = 0;
+            _q = 0; 
+            _rho = 0; 
+            _mi = 0; 
+            _pK = 0; 
+            _re = 0;
+            _lambda = 0;
+            _dP = 0;
+            _x = 0;
+            Console.WriteLine("Values resetted to 0.");
+        }
+
         public void ConvertToSi () // define convert values in another class (interface?)
         {
             // '' to m
@@ -418,6 +471,7 @@ namespace OporyPrzeplywu
             // update status
             _isSI = true;
 
+            Console.WriteLine("Succesfully converted to SI units.");
         }
 
     }
